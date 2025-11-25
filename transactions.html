@@ -1,0 +1,39 @@
+<div th:fragment="content" class="fade-in">
+    <h2 class="mb-4">Transactions</h2>
+
+    <table class="table table-striped shadow">
+        <thead class="table-dark">
+            <tr>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Category/Source</th>
+                <th>Actions</th>
+
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr th:each="exp : ${expenses}">
+                <td><span class="badge bg-danger">Expense</span></td>
+                <td th:text="${exp.amount}"></td>
+                <td th:text="${exp.category}"></td>
+                <td>
+                    <a th:href="@{'/expense/edit/' + ${exp.id}}" class="btn btn-warning btn-sm">Edit</a>
+                    <a th:href="@{'/expense/delete/' + ${exp.id}}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+
+            </tr>
+
+            <tr th:each="inc : ${income}">
+                <td><span class="badge bg-success">Income</span></td>
+                <td th:text="${inc.amount}"></td>
+                <td th:text="${inc.source}"></td>
+                <td>
+                    <a th:href="@{'/income/edit/' + ${inc.id}}" class="btn btn-warning btn-sm">Edit</a>
+                    <a th:href="@{'/income/delete/' + ${inc.id}}" class="btn btn-danger btn-sm">Delete</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
