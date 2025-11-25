@@ -1,0 +1,21 @@
+<div th:fragment="content" class="col-md-6 mx-auto fade-in">
+
+    <div class="card shadow p-4">
+        <h3 class="mb-4">Add Expense</h3>
+
+        <form method="post" action="/expense/add">
+
+            <div class="mb-3">
+                <label>Amount</label>
+                <input type="number" name="amount" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label>Category</label>
+                <input type="text" name="category" class="form-control" required>
+            </div>
+
+            <button class="btn btn-danger w-100">Save Expense</button>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,74 @@
+<div th:fragment="content" class="fade-in">
+
+    <h2 class="mb-4">Dashboard</h2>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3 shadow">
+                <div class="card-body">
+                    <h5>Total Income</h5>
+                    <h3 th:text="${totalIncome}"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-danger mb-3 shadow">
+                <div class="card-body">
+                    <h5>Total Expense</h5>
+                    <h3 th:text="${totalExpense}"></h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3 shadow">
+                <div class="card-body">
+                    <h5>Balance</h5>
+                    <h3 th:text="${balance}"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <canvas id="pieChart"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="barChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const totalIncome = [[${totalIncome}]];
+    const totalExpense = [[${totalExpense}]];
+
+    // Pie Chart
+    new Chart(document.getElementById("pieChart"), {
+        type: "pie",
+        data: {
+            labels: ["Income", "Expense"],
+            datasets: [{
+                data: [totalIncome, totalExpense],
+                backgroundColor: ["#28a745", "#dc3545"]
+            }]
+        }
+    });
+
+    // Bar Chart
+    new Chart(document.getElementById("barChart"), {
+        type: "bar",
+        data: {
+            labels: ["Income", "Expense"],
+            datasets: [{
+                label: "Amount",
+                data: [totalIncome, totalExpense]
+            }]
+        }
+    });
+});
+</script>
