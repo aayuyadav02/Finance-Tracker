@@ -1,0 +1,204 @@
+<div th:fragment="content" class="fade-in">
+    <div class="container mt-4 mt-md-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-success text-white text-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-user-plus me-2"></i>
+                            Create Account
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Alert Messages -->
+                        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${message}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Register Form -->
+                        <form th:action="@{/auth/register}" method="post" novalidate id="registerForm">
+                            <div class="mb-4">
+                                <label for="name" class="form-label fw-semibold">
+                                    <i class="fas fa-user me-2"></i>Full Name
+                                </label>
+                                <input type="text" class="form-control form-control-lg" id="name" name="name" 
+                                       required placeholder="Enter your full name" autocomplete="name">
+                                <div class="invalid-feedback">
+                                    Please provide your full name.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="email" class="form-label fw-semibold">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                       required placeholder="Enter your email" autocomplete="email">
+                                <div class="invalid-feedback">
+                                    Please provide a valid email address.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2"></i>Password
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control form-control-lg" id="password" 
+                                           name="password" required minlength="6" placeholder="Create a password" 
+                                           autocomplete="new-password">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye" id="password-toggle"></i>
+                                    </button>
+                                </div>
+                                <div class="form-text mt-2">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Password must be at least 6 characters long
+                                </div>
+                                <div class="invalid-feedback">
+                                    Password must be at least 6 characters long.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="confirmPassword" class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2"></i>Confirm Password
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control form-control-lg" id="confirmPassword" 
+                                           name="confirmPassword" required placeholder="Confirm your password" 
+                                           autocomplete="new-password">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('confirmPassword')">
+                                        <i class="fas fa-eye" id="confirmPassword-toggle"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Passwords do not match.
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    <i class="fas fa-user-plus me-2"></i>Create Account
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-2">Already have an account?</p>
+                            <a th:href="@{/auth/login}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login here
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile-friendly footer -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Your data is secure and encrypted
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password visibility toggle
+function togglePassword(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const toggleIcon = document.getElementById(fieldId + '-toggle');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+
+// Real-time password validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('registerForm');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirmPassword');
+    
+    // Password strength indicator
+    function checkPasswordStrength() {
+        const passwordValue = password.value;
+        let strength = 0;
+        
+        if (passwordValue.length >= 6) strength++;
+        if (passwordValue.length >= 10) strength++;
+        if (/[A-Z]/.test(passwordValue)) strength++;
+        if (/[0-9]/.test(passwordValue)) strength++;
+        if (/[^A-Za-z0-9]/.test(passwordValue)) strength++;
+        
+        return strength;
+    }
+    
+    // Real-time validation
+    password.addEventListener('input', function() {
+        const strength = checkPasswordStrength();
+        const feedback = password.nextElementSibling.nextElementSibling;
+        
+        if (password.value.length > 0) {
+            if (password.value.length < 6) {
+                password.classList.add('is-invalid');
+                password.classList.remove('is-valid');
+            } else {
+                password.classList.remove('is-invalid');
+                password.classList.add('is-valid');
+            }
+        }
+        
+        // Check confirm password match
+        if (confirmPassword.value.length > 0) {
+            validatePasswordMatch();
+        }
+    });
+    
+    confirmPassword.addEventListener('input', validatePasswordMatch);
+    
+    function validatePasswordMatch() {
+        if (confirmPassword.value !== password.value) {
+            confirmPassword.classList.add('is-invalid');
+            confirmPassword.classList.remove('is-valid');
+        } else {
+            confirmPassword.classList.remove('is-invalid');
+            confirmPassword.classList.add('is-valid');
+        }
+    }
+    
+    // Form submission validation
+    form.addEventListener('submit', function(event) {
+        if (!form.checkValidity() || password.value !== confirmPassword.value) {
+            event.preventDefault();
+            event.stopPropagation();
+            
+            if (password.value !== confirmPassword.value) {
+                confirmPassword.classList.add('is-invalid');
+            }
+        }
+        
+        form.classList.add('was-validated');
+    });
+    
+    // Auto-focus on name field for better UX
+    const nameField = document.getElementById('name');
+    if (nameField) {
+        setTimeout(() => nameField.focus(), 500);
+    }
+});
+</script>

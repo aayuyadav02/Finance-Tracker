@@ -1,0 +1,118 @@
+<div th:fragment="content" class="fade-in">
+    <div class="container mt-4 mt-md-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6 col-xl-4">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white text-center">
+                        <h3 class="mb-0">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Login
+                        </h3>
+                    </div>
+                    <div class="card-body p-4">
+                        <!-- Alert Messages -->
+                        <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>
+                            <span th:text="${message}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                        
+                        <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <span th:text="${error}"></span>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+
+                        <!-- Login Form -->
+                        <form th:action="@{/auth/login}" method="post" novalidate>
+                            <div class="mb-4">
+                                <label for="email" class="form-label fw-semibold">
+                                    <i class="fas fa-envelope me-2"></i>Email Address
+                                </label>
+                                <input type="email" class="form-control form-control-lg" id="email" name="email" 
+                                       required placeholder="Enter your email" autocomplete="email">
+                                <div class="invalid-feedback">
+                                    Please provide a valid email address.
+                                </div>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label for="password" class="form-label fw-semibold">
+                                    <i class="fas fa-lock me-2"></i>Password
+                                </label>
+                                <div class="input-group">
+                                    <input type="password" class="form-control form-control-lg" id="password" 
+                                           name="password" required placeholder="Enter your password" 
+                                           autocomplete="current-password">
+                                    <button class="btn btn-outline-secondary" type="button" onclick="togglePassword('password')">
+                                        <i class="fas fa-eye" id="password-toggle"></i>
+                                    </button>
+                                </div>
+                                <div class="invalid-feedback">
+                                    Password is required.
+                                </div>
+                            </div>
+                            
+                            <div class="d-grid gap-3">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                                </button>
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-4">
+                            <p class="mb-2">Don't have an account?</p>
+                            <a th:href="@{/auth/register}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-user-plus me-2"></i>Register here
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Mobile-friendly footer -->
+                <div class="text-center mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Your data is secure and encrypted
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Password visibility toggle
+function togglePassword(fieldId) {
+    const passwordField = document.getElementById(fieldId);
+    const toggleIcon = document.getElementById(fieldId + '-toggle');
+    
+    if (passwordField.type === 'password') {
+        passwordField.type = 'text';
+        toggleIcon.className = 'fas fa-eye-slash';
+    } else {
+        passwordField.type = 'password';
+        toggleIcon.className = 'fas fa-eye';
+    }
+}
+
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        });
+    }
+    
+    // Auto-focus on email field for better UX
+    const emailField = document.getElementById('email');
+    if (emailField) {
+        setTimeout(() => emailField.focus(), 500);
+    }
+});
+</script>

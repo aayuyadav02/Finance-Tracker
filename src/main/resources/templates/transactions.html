@@ -1,39 +1,219 @@
 <div th:fragment="content" class="fade-in">
-    <h2 class="mb-4">Transactions</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Transactions</h2>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary btn-sm d-md-none" onclick="toggleView()">
+                <i class="fas fa-th-list me-1"></i>Toggle View
+            </button>
+        </div>
+    </div>
 
-    <table class="table table-striped shadow">
-        <thead class="table-dark">
-            <tr>
-                <th>Type</th>
-                <th>Amount</th>
-                <th>Category/Source</th>
-                <th>Actions</th>
+    <!-- Desktop Table View -->
+    <div class="table-responsive d-none d-md-block">
+        <table class="table table-striped shadow">
+            <thead class="table-dark">
+                <tr>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Category/Source</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="exp : ${expenses}">
+                    <td><span class="badge bg-danger">Expense</span></td>
+                    <td class="fw-bold text-danger" th:text="'$' + ${#numbers.formatDecimal(exp.amount, 0, 2)}">$0.00</td>
+                    <td th:text="${exp.category}">Category</td>
+                    <td class="text-end">
+                        <button class="btn btn-outline-warning btn-sm me-1" onclick="editExpense(${exp.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <a th:href="@{'/expense/delete/' + ${exp.id}}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:each="inc : ${income}">
+                    <td><span class="badge bg-success">Income</span></td>
+                    <td class="fw-bold text-success" th:text="'$' + ${#numbers.formatDecimal(inc.amount, 0, 2)}">$0.00</td>
+                    <td th:text="${inc.source}">Source</td>
+                    <td class="text-end">
+                        <button class="btn btn-outline-warning btn-sm me-1" onclick="editIncome(${inc.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <a th:href="@{'/income/delete/' + ${inc.id}}" class="btn btn-outline-danger btn-sm">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(expenses) and #lists.isEmpty(income)}">
+                    <td colspan="4" class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-2x mb-2"></i>
+                        <p class="mb-0">No transactions found. Start by adding income or expenses!</p>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
 
-            </tr>
-        </thead>
+    <!-- Mobile Card View -->
+    <div class="d-md-none" id="mobileCardView">
+        <div class="row g-3">
+            <!-- Expense Cards -->
+            <div class="col-12" th:each="exp : ${expenses}">
+                <div class="card border-danger">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-danger mb-2">Expense</span>
+                                <h6 class="card-title mb-1" th:text="${exp.category}">Category</h6>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="card-text text-danger mb-0" th:text="'$' + ${#numbers.formatDecimal(exp.amount, 0, 2)}">$0.00</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-1">
+                            <button class="btn btn-outline-warning btn-sm" onclick="editExpense(${exp.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <a th:href="@{'/expense/delete/' + ${exp.id}}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-        <tbody>
-            <tr th:each="exp : ${expenses}">
-                <td><span class="badge bg-danger">Expense</span></td>
-                <td th:text="${exp.amount}"></td>
-                <td th:text="${exp.category}"></td>
-                <td>
-                    <a th:href="@{'/expense/edit/' + ${exp.id}}" class="btn btn-warning btn-sm">Edit</a>
-                    <a th:href="@{'/expense/delete/' + ${exp.id}}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
+            <!-- Income Cards -->
+            <div class="col-12" th:each="inc : ${income}">
+                <div class="card border-success">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start mb-2">
+                            <div>
+                                <span class="badge bg-success mb-2">Income</span>
+                                <h6 class="card-title mb-1" th:text="${inc.source}">Source</h6>
+                            </div>
+                            <div class="text-end">
+                                <h5 class="card-text text-success mb-0" th:text="'$' + ${#numbers.formatDecimal(inc.amount, 0, 2)}">$0.00</h5>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-end gap-1">
+                            <button class="btn btn-outline-warning btn-sm" onclick="editIncome(${inc.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <a th:href="@{'/income/delete/' + ${inc.id}}" class="btn btn-outline-danger btn-sm">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            </tr>
+            <!-- Empty State -->
+            <div class="col-12" th:if="${#lists.isEmpty(expenses) and #lists.isEmpty(income)}">
+                <div class="text-center py-5">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <h5 class="text-muted">No transactions yet</h5>
+                    <p class="text-muted mb-3">Start tracking your finances by adding income and expenses</p>
+                    <div class="d-flex gap-2 justify-content-center">
+                        <a href="/add-income" class="btn btn-success btn-sm">
+                            <i class="fas fa-plus me-1"></i>Add Income
+                        </a>
+                        <a href="/add-expense" class="btn btn-danger btn-sm">
+                            <i class="fas fa-minus me-1"></i>Add Expense
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-            <tr th:each="inc : ${income}">
-                <td><span class="badge bg-success">Income</span></td>
-                <td th:text="${inc.amount}"></td>
-                <td th:text="${inc.source}"></td>
-                <td>
-                    <a th:href="@{'/income/edit/' + ${inc.id}}" class="btn btn-warning btn-sm">Edit</a>
-                    <a th:href="@{'/income/delete/' + ${inc.id}}" class="btn btn-danger btn-sm">Delete</a>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-
+    <!-- Summary Cards -->
+    <div class="row g-3 mt-4">
+        <div class="col-12 col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Total Income</h6>
+                            <h4 class="text-success mb-0" th:text="'$' + ${#numbers.formatDecimal(income.![amount].stream().mapToDouble(java.lang.Double::doubleValue).sum(), 0, 2)}">$0.00</h4>
+                        </div>
+                        <i class="fas fa-arrow-up fa-2x text-success opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="card bg-light">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-title text-muted mb-1">Total Expenses</h6>
+                            <h4 class="text-danger mb-0" th:text="'$' + ${#numbers.formatDecimal(expenses.![amount].stream().mapToDouble(java.lang.Double::doubleValue).sum(), 0, 2)}">$0.00</h4>
+                        </div>
+                        <i class="fas fa-arrow-down fa-2x text-danger opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+// Toggle between table and card view on mobile
+function toggleView() {
+    const tableView = document.querySelector('.table-responsive');
+    const cardView = document.getElementById('mobileCardView');
+    
+    if (tableView.classList.contains('d-none')) {
+        tableView.classList.remove('d-none');
+        cardView.style.display = 'none';
+    } else {
+        tableView.classList.add('d-none');
+        cardView.style.display = 'block';
+    }
+}
+
+// Edit functions (placeholder for future implementation)
+function editExpense(id) {
+    // Future implementation for inline editing
+    window.location.href = '/expense/edit/' + id;
+}
+
+function editIncome(id) {
+    // Future implementation for inline editing
+    window.location.href = '/income/edit/' + id;
+}
+
+// Mobile optimizations
+document.addEventListener('DOMContentLoaded', function() {
+    // Add swipe gestures for mobile (optional enhancement)
+    if ('ontouchstart' in window) {
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            let startX = 0;
+            let startY = 0;
+            
+            card.addEventListener('touchstart', function(e) {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            });
+            
+            card.addEventListener('touchend', function(e) {
+                const endX = e.changedTouches[0].clientX;
+                const endY = e.changedTouches[0].clientY;
+                const diffX = endX - startX;
+                const diffY = endY - startY;
+                
+                // Detect swipe left for delete action
+                if (Math.abs(diffX) > Math.abs(diffY) && diffX < -50) {
+                    const deleteBtn = card.querySelector('.btn-outline-danger');
+                    if (deleteBtn) {
+                        deleteBtn.click();
+                    }
+                }
+            });
+        });
+    }
+});
+</script>

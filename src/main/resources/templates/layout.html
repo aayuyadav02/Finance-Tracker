@@ -2,43 +2,237 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finance Tracker</title>
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        body {
-            background-color: #f5f7fa;
+        :root {
+            --primary-color: #0d6efd;
+            --success-color: #198754;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --light-bg: #f5f7fa;
         }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
         .navbar-brand {
             font-weight: bold;
             font-size: 1.4rem;
+            color: var(--primary-color) !important;
+            text-decoration: none;
         }
+
+        .navbar {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 0.5rem 0;
+        }
+
         .content-wrapper {
             margin-top: 40px;
+            margin-bottom: 40px;
+            min-height: calc(100vh - 200px);
         }
+
         .card {
             border-radius: 15px;
+            border: none;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
         }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .form-control {
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+            padding: 0.75rem;
+            font-size: 1rem;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+
         footer {
             margin-top: 40px;
             padding: 20px;
             text-align: center;
             color: #777;
+            background-color: white;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Mobile Navigation */
+        .mobile-nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        .navbar-nav-mobile {
+            display: none;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-brand {
+                font-size: 1.2rem;
+            }
+
+            .mobile-nav-toggle {
+                display: block;
+            }
+
+            .navbar-nav-desktop {
+                display: none !important;
+            }
+
+            .navbar-nav-mobile {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+                margin-top: 1rem;
+                padding-top: 1rem;
+                border-top: 1px solid #dee2e6;
+            }
+
+            .navbar-nav-mobile .btn {
+                width: 100%;
+                text-align: center;
+            }
+
+            .content-wrapper {
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .card {
+                border-radius: 10px;
+                margin-bottom: 1rem;
+            }
+
+            .btn {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+
+            .form-control {
+                padding: 0.875rem;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .container {
+                padding-left: 15px;
+                padding-right: 15px;
+            }
+
+            .navbar {
+                padding: 0.75rem 0;
+            }
+
+            .content-wrapper {
+                margin-top: 15px;
+            }
+
+            .card-body {
+                padding: 1rem;
+            }
+
+            .btn {
+                padding: 0.875rem 1rem;
+                font-size: 0.95rem;
+            }
+        }
+
+        /* Touch-friendly interactions */
+        @media (hover: none) {
+            .card:hover {
+                transform: none;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            }
+
+            .btn:hover {
+                transform: none;
+            }
+
+            .btn:active {
+                transform: scale(0.98);
+            }
+        }
+
+        /* Fade-in animation */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        /* Custom scrollbar for mobile */
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+
+            ::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 3px;
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
         }
     </style>
-    <style>
-    .fade-in {
-        animation: fadeIn 0.5s ease-in-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    </style>
-
 </head>
 
 <body>
@@ -46,12 +240,83 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
     <div class="container">
         <a class="navbar-brand" href="/dashboard">💰 Finance Tracker</a>
+        
+        <!-- Mobile menu toggle -->
+        <button class="mobile-nav-toggle" onclick="toggleMobileNav()">
+            <i class="fas fa-bars"></i>
+        </button>
 
         <div>
-            <a href="/dashboard" class="btn btn-outline-primary me-2">Dashboard</a>
-            <a href="/add-income" class="btn btn-outline-success me-2">Add Income</a>
-            <a href="/add-expense" class="btn btn-outline-danger me-2">Add Expense</a>
-            <a href="/transactions" class="btn btn-outline-secondary">Transactions</a>
+            <!-- Desktop Navigation -->
+            <div class="navbar-nav-desktop d-flex align-items-center">
+                <!-- Show login/register when not logged in -->
+                <div th:if="${currentUser == null}" class="d-flex">
+                    <a href="/auth/login" class="btn btn-outline-primary me-2">Login</a>
+                    <a href="/auth/register" class="btn btn-outline-success">Register</a>
+                </div>
+                
+                <!-- Show navigation and logout when logged in -->
+                <div th:if="${currentUser != null}" class="d-flex align-items-center">
+                    <span class="me-3 text-muted d-none d-md-block">
+                        <i class="fas fa-user me-1"></i>
+                        <span th:text="${currentUser.name}"></span>
+                    </span>
+                    <a href="/dashboard" class="btn btn-outline-primary me-2">Dashboard</a>
+                    <a href="/add-income" class="btn btn-outline-success me-2">Add Income</a>
+                    <a href="/add-expense" class="btn btn-outline-danger me-2">Add Expense</a>
+                    <a href="/transactions" class="btn btn-outline-secondary me-2">Transactions</a>
+                    <a href="/suggestions" class="btn btn-outline-warning me-2">💡 Suggestions</a>
+                    <a href="/auth/logout" class="btn btn-outline-dark">
+                        <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div class="navbar-nav-mobile" id="mobileNav">
+                <!-- Show login/register when not logged in -->
+                <div th:if="${currentUser == null}">
+                    <div class="text-center mb-3">
+                        <span class="text-muted">
+                            <i class="fas fa-user me-1"></i>Welcome!
+                        </span>
+                    </div>
+                    <a href="/auth/login" class="btn btn-outline-primary mb-2">
+                        <i class="fas fa-sign-in-alt me-2"></i>Login
+                    </a>
+                    <a href="/auth/register" class="btn btn-outline-success">
+                        <i class="fas fa-user-plus me-2"></i>Register
+                    </a>
+                </div>
+                
+                <!-- Show navigation and logout when logged in -->
+                <div th:if="${currentUser != null}">
+                    <div class="text-center mb-3">
+                        <span class="text-muted">
+                            <i class="fas fa-user me-1"></i>
+                            <span th:text="${currentUser.name}"></span>
+                        </span>
+                    </div>
+                    <a href="/dashboard" class="btn btn-outline-primary mb-2">
+                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                    </a>
+                    <a href="/add-income" class="btn btn-outline-success mb-2">
+                        <i class="fas fa-plus-circle me-2"></i>Add Income
+                    </a>
+                    <a href="/add-expense" class="btn btn-outline-danger mb-2">
+                        <i class="fas fa-minus-circle me-2"></i>Add Expense
+                    </a>
+                    <a href="/transactions" class="btn btn-outline-secondary mb-2">
+                        <i class="fas fa-list me-2"></i>Transactions
+                    </a>
+                    <a href="/suggestions" class="btn btn-outline-warning mb-2">
+                        <i class="fas fa-lightbulb me-2"></i>Suggestions
+                    </a>
+                    <a href="/auth/logout" class="btn btn-outline-dark">
+                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </nav>
@@ -61,12 +326,99 @@
 </div>
 
 <footer>
-    Finance Tracker © 2025 – Built by Aayush Yadav
+    <div class="container">
+        <p class="mb-0">Finance Tracker © 2025 – Built by Aayush Yadav</p>
+        <p class="mb-0 small text-muted">Responsive design for mobile, tablet & desktop</p>
+    </div>
 </footer>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<script>
+// Mobile navigation toggle
+function toggleMobileNav() {
+    const mobileNav = document.getElementById('mobileNav');
+    const toggleBtn = document.querySelector('.mobile-nav-toggle i');
+    
+    if (mobileNav.style.display === 'flex') {
+        mobileNav.style.display = 'none';
+        toggleBtn.className = 'fas fa-bars';
+    } else {
+        mobileNav.style.display = 'flex';
+        toggleBtn.className = 'fas fa-times';
+    }
+}
+
+// Close mobile nav when clicking outside
+document.addEventListener('click', function(event) {
+    const mobileNav = document.getElementById('mobileNav');
+    const toggleBtn = document.querySelector('.mobile-nav-toggle');
+    
+    if (!mobileNav.contains(event.target) && !toggleBtn.contains(event.target)) {
+        mobileNav.style.display = 'none';
+        document.querySelector('.mobile-nav-toggle i').className = 'fas fa-bars';
+    }
+});
+
+// Responsive chart sizing
+function makeChartsResponsive() {
+    const charts = document.querySelectorAll('canvas');
+    charts.forEach(chart => {
+        const container = chart.parentElement;
+        if (container) {
+            const containerWidth = container.offsetWidth;
+            chart.style.maxWidth = '100%';
+            chart.style.height = 'auto';
+        }
+    });
+}
+
+// Initialize responsive features
+document.addEventListener('DOMContentLoaded', function() {
+    makeChartsResponsive();
+    
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        makeChartsResponsive();
+        
+        // Reset mobile nav on desktop
+        if (window.innerWidth > 768) {
+            document.getElementById('mobileNav').style.display = 'none';
+            document.querySelector('.mobile-nav-toggle i').className = 'fas fa-bars';
+        }
+    });
+    
+    // Add smooth scrolling for mobile
+    if ('ontouchstart' in window) {
+        document.querySelectorAll('.btn').forEach(btn => {
+            btn.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.98)';
+            });
+            
+            btn.addEventListener('touchend', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    }
+});
+
+// Prevent zoom on input focus for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input, select, textarea');
+    inputs.forEach(input => {
+        input.addEventListener('focus', function() {
+            if (window.innerWidth <= 768) {
+                document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0');
+            }
+        });
+        
+        input.addEventListener('blur', function() {
+            document.querySelector('meta[name="viewport"]').setAttribute('content', 'width=device-width, initial-scale=1.0');
+        });
+    });
+});
+</script>
 
 </body>
 </html>
